@@ -1,2 +1,4 @@
 *.conf
 !default.conf
+!ark.conf
+!refrep.conf
