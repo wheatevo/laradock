@@ -588,7 +588,7 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
 ARG INSTALL_SSH2=false
 
 RUN if [ ${INSTALL_SSH2} = true ]; then \
-    apt-get -y install libssh2-1-dev iputils-ping && \
+    apt-get -y install libssh2-1-dev iputils-ping host && \
     pecl install ssh2-alpha && \
     echo "extension=ssh2.so" >> /etc/php/${PHP_VERSION}/mods-available/ssh2.ini && \
     ln -s /etc/php/${PHP_VERSION}/mods-available/ssh2.ini /etc/php/${PHP_VERSION}/cli/conf.d/20-ssh2.ini && \

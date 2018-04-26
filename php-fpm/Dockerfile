@@ -688,7 +688,7 @@ ARG INSTALL_SSH2=false
 
 RUN if [ ${INSTALL_SSH2} = true ]; then \
     apt-get update -yqq && \
-    apt-get -y install libssh2-1-dev iputils-ping && \
+    apt-get -y install libssh2-1-dev iputils-ping host && \
     pecl install ssh2-alpha && \
     docker-php-ext-enable ssh2 && \
     mkdir -p /root/.ssh \
