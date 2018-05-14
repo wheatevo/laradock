@@ -288,6 +288,7 @@ ARG INSTALL_SOAP=false
 
 RUN if [ ${INSTALL_SOAP} = true ]; then \
   # Install the PHP SOAP extension
+  apt-get update && \
   apt-get -y install libxml2-dev php${LARADOCK_PHP_VERSION}-soap \
 ;fi
 
@@ -312,6 +313,7 @@ RUN if [ ${INSTALL_XSL} = true ]; then \
 ARG INSTALL_LDAP=false
 
 RUN if [ ${INSTALL_LDAP} = true ]; then \
+    apt-get update && \
     apt-get install -y libldap2-dev && \
     apt-get install -y php${LARADOCK_PHP_VERSION}-ldap \
 ;fi
@@ -340,6 +342,7 @@ RUN if [ ${INSTALL_LDAP} = true ]; then \
 ARG INSTALL_REFREP_DEPS=false
 
 RUN if [ ${INSTALL_REFREP_DEPS} = true ]; then \
+    apt-get update && \
     apt-get -y install cifs-utils mdbtools libodbc1 odbc-mdbtools unixodbc-dev && \
     apt-get install -y php${PHP_VERSION}-odbc && \
     echo "[MDBTools]" > /etc/odbcinst.ini && \
@@ -1291,6 +1294,15 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
     && apt-get update \
     && apt-get -y install postgresql-client-12 \
 ;fi
+
+###########################################################################
+# nasm
+###########################################################################
+
+USER root
+
+RUN apt-get update -yqq \
+    && apt-get -yqq install nasm
 
 ###########################################################################
 # Dusk Dependencies:
