@@ -5,7 +5,6 @@
 /.project
 .docker-sync
 /jenkins/jenkins_home
-
 /logstash/pipeline/*.conf
 /logstash/config/pipelines.yml
 
@@ -20,3 +19,4 @@
 docker-compose.custom.yml
 
 .DS_Store
+/nginx/ssl/default*

@@ -104,13 +104,15 @@ ARG INSTALL_SSH2=false
 
 RUN if [ ${INSTALL_SSH2} = true ]; then \
     # Install the ssh2 extension
-    apt-get -y install libssh2-1-dev && \
+    apt-get update -yqq && \
+    apt-get -y install libssh2-1-dev iputils-ping host && \
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
         pecl install -a ssh2-0.13; \
     else \
         pecl install -a ssh2-1.2; \
     fi && \
-    docker-php-ext-enable ssh2 \
+    docker-php-ext-enable ssh2 && \
+    mkdir -p /root/.ssh \
 ;fi
 
 ###########################################################################
@@ -678,20 +680,6 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
     alien -i oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
     docker-php-ext-install oci8 && \
     mkdir -p /usr/lib/oracle/11.2/client64/lib/log \
-;fi
-
-###########################################################################
-# SSH2:
-###########################################################################
-
-ARG INSTALL_SSH2=false
-
-RUN if [ ${INSTALL_SSH2} = true ]; then \
-    apt-get update -yqq && \
-    apt-get -y install libssh2-1-dev iputils-ping host && \
-    pecl install ssh2-alpha && \
-    docker-php-ext-enable ssh2 && \
-    mkdir -p /root/.ssh \
 ;fi
 
 ###########################################################################

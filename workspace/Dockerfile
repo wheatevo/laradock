@@ -251,6 +251,16 @@ RUN if [ ${INSTALL_BZ2} = true ]; then \
   apt-get -y install php${LARADOCK_PHP_VERSION}-bz2 \
 ;fi
 
+USER root
+
+ARG INSTALL_SSH2=false
+
+RUN if [ ${INSTALL_SSH2} = true ]; then \
+  # Install the PHP SSH2 extension
+  apt-get -y install libssh2-1-dev php${LARADOCK_PHP_VERSION}-ssh2 iputils-ping host && \
+  mkdir -p /root/.ssh \
+;fi
+
 ###########################################################################
 # GMP (GNU Multiple Precision):
 ###########################################################################
@@ -344,7 +354,7 @@ ARG INSTALL_REFREP_DEPS=false
 RUN if [ ${INSTALL_REFREP_DEPS} = true ]; then \
     apt-get update && \
     apt-get -y install cifs-utils mdbtools libodbc1 odbc-mdbtools unixodbc-dev && \
-    apt-get install -y php${PHP_VERSION}-odbc && \
+    apt-get install -y php${LARADOCK_PHP_VERSION}-odbc && \
     echo "[MDBTools]" > /etc/odbcinst.ini && \
     echo "Description=MDBTools Driver" >> /etc/odbcinst.ini && \
     echo "Driver=/usr/lib/x86_64-linux-gnu/odbc/libmdbodbc.so" >> /etc/odbcinst.ini && \
@@ -579,8 +589,8 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
     alien -i oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
     alien -i oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
     pecl -q install oci8 && \
-    echo "extension=oci8.so" >> /etc/php/${PHP_VERSION}/mods-available/oci8.ini && \
-    ln -s /etc/php/${PHP_VERSION}/mods-available/oci8.ini /etc/php/${PHP_VERSION}/cli/conf.d/20-oci8.ini && \
+    echo "extension=oci8.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/oci8.ini && \
+    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/oci8.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-oci8.ini && \
     mkdir -p /usr/lib/oracle/11.2/client64/lib/log \
 ;fi
 
