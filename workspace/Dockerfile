@@ -376,7 +376,8 @@ RUN if [ ${INSTALL_VERTICA} = true ]; then \
     echo -e "[VerticaDev]\nDriver = /opt/vertica/lib64/libverticaodbc.so\nPort = 5433\nDriver = Vertica" >> /etc/odbc.ini && \
     echo -e "[Vertica]\nDriver = /opt/vertica/lib64/libverticaodbc.so" >> /etc/odbcinst.ini && \
     echo -e "[Driver]\nDriverManagerEncoding=UTF-16\nODBCInstLib = /usr/lib/x86_64-linux-gnu/libodbcinst.so.1\nErrorMessagesPath=/opt/vertica/lib64\nLogLevel=4\nLogPath=/tmp" >> /etc/vertica.ini && \
-    chmod 644 /etc/odbc.ini && chmod 644 /etc/vertica.ini \
+    chmod 644 /etc/odbc.ini && chmod 644 /etc/vertica.ini && \
+    chown -R root:root /opt/vertica \
 ;fi
 
 ###########################################################################
