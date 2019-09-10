@@ -350,8 +350,9 @@ RUN if [ ${INSTALL_LDAP} = true ]; then \
 ###########################################################################
 
 ARG INSTALL_REFREP_DEPS=false
+ARG INSTALL_VERTICA=false
 
-RUN if [ ${INSTALL_REFREP_DEPS} = true ]; then \
+RUN if [ ${INSTALL_REFREP_DEPS} = true || ${INSTALL_VERTICA} = true ]; then \
     apt-get update && \
     apt-get -y install cifs-utils mdbtools libodbc1 odbc-mdbtools unixodbc-dev && \
     apt-get install -y php${LARADOCK_PHP_VERSION}-odbc && \
@@ -363,6 +364,19 @@ RUN if [ ${INSTALL_REFREP_DEPS} = true ]; then \
     echo "UsageCount=1" >> /etc/odbcinst.ini && \
     chmod 644 /etc/odbcinst.ini && \
     ln -s /usr/lib/x86_64-linux-gnu/libodbccr.so.2 /etc/libodbccr.so \
+;fi
+
+###########################################################################
+# Vertica Dependencies:
+###########################################################################
+
+RUN if [ ${INSTALL_VERTICA} = true ]; then \
+    wget https://www.vertica.com/client_drivers/9.2.x/9.2.1-0/vertica-client-9.2.1-0.x86_64.tar.gz && \
+    tar -xvzf vertica-client-9.2.1-0.x86_64.tar.gz -C / && \
+    echo -e "[VerticaDev]\nDriver = /opt/vertica/lib64/libverticaodbc.so\nPort = 5433\nDriver = Vertica" >> /etc/odbc.ini && \
+    echo -e "[Vertica]\nDriver = /opt/vertica/lib64/libverticaodbc.so" >> /etc/odbcinst.ini && \
+    echo -e "[Driver]\nDriverManagerEncoding=UTF-16\nODBCInstLib = /usr/lib/x86_64-linux-gnu/libodbcinst.so.1\nErrorMessagesPath=/opt/vertica/lib64\nLogLevel=4\nLogPath=/tmp" >> /etc/vertica.ini && \
+    chmod 644 /etc/odbc.ini && chmod 644 /etc/vertica.ini \
 ;fi
 
 ###########################################################################
