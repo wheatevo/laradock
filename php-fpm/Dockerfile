@@ -669,6 +669,8 @@ RUN if [ ${INSTALL_REFREP_DEPS} = true || ${INSTALL_VERTICA} = true ]; then \
 ###########################################################################
 
 RUN if [ ${INSTALL_VERTICA} = true ]; then \
+    apt-get update -yqq && \
+    apt-get -y install wget && \
     wget https://www.vertica.com/client_drivers/9.2.x/9.2.1-0/vertica-client-9.2.1-0.x86_64.tar.gz && \
     tar -xvzf vertica-client-9.2.1-0.x86_64.tar.gz -C / && \
     echo -e "[VerticaDev]\nDriver = /opt/vertica/lib64/libverticaodbc.so\nPort = 5433\nDriver = Vertica" >> /etc/odbc.ini && \
