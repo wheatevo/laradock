@@ -673,9 +673,9 @@ RUN if [ ${INSTALL_VERTICA} = true ]; then \
     apt-get -y install wget && \
     wget https://www.vertica.com/client_drivers/9.2.x/9.2.1-0/vertica-client-9.2.1-0.x86_64.tar.gz && \
     tar -xvzf vertica-client-9.2.1-0.x86_64.tar.gz -C / && \
-    echo -e "[VerticaDev]\nDriver = /opt/vertica/lib64/libverticaodbc.so\nPort = 5433\nDriver = Vertica" >> /etc/odbc.ini && \
-    echo -e "[Vertica]\nDriver = /opt/vertica/lib64/libverticaodbc.so" >> /etc/odbcinst.ini && \
-    echo -e "[Driver]\nDriverManagerEncoding=UTF-16\nODBCInstLib = /usr/lib/x86_64-linux-gnu/libodbcinst.so.1\nErrorMessagesPath=/opt/vertica/lib64\nLogLevel=4\nLogPath=/tmp" >> /etc/vertica.ini && \
+    printf "[VerticaDev]\nDriver = /opt/vertica/lib64/libverticaodbc.so\nPort = 5433\nDriver = Vertica" >> /etc/odbc.ini && \
+    printf "[Vertica]\nDriver = /opt/vertica/lib64/libverticaodbc.so" >> /etc/odbcinst.ini && \
+    printf "[Driver]\nDriverManagerEncoding=UTF-16\nODBCInstLib = /usr/lib/x86_64-linux-gnu/libodbcinst.so.1\nErrorMessagesPath=/opt/vertica/lib64\nLogLevel=4\nLogPath=/tmp" >> /etc/vertica.ini && \
     chmod 644 /etc/odbc.ini && chmod 644 /etc/vertica.ini && \
     chown -R root:root /opt/vertica \
 ;fi
