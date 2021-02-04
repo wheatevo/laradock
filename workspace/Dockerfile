@@ -327,6 +327,32 @@ RUN if [ ${INSTALL_SMB} = true ]; then \
 ;fi
 
 ###########################################################################
+# Extra LDAP Steps:
+###########################################################################
+RUN if [ ${INSTALL_LDAP} = true ]; then \
+    echo "TLS_REQCERT never" >> /etc/ldap/ldap.conf \
+;fi
+
+###########################################################################
+# Refrep Dependencies:
+###########################################################################
+
+ARG INSTALL_REFREP_DEPS=false
+
+RUN if [ ${INSTALL_REFREP_DEPS} = true ]; then \
+    apt-get -y install cifs-utils mdbtools libodbc1 odbc-mdbtools unixodbc-dev && \
+    apt-get install -y php${PHP_VERSION}-odbc && \
+    echo "[MDBTools]" > /etc/odbcinst.ini && \
+    echo "Description=MDBTools Driver" >> /etc/odbcinst.ini && \
+    echo "Driver=/usr/lib/x86_64-linux-gnu/odbc/libmdbodbc.so" >> /etc/odbcinst.ini && \
+    echo "Setup=/usr/lib/x86_64-linux-gnu/odbc/libmdbodbc.so" >> /etc/odbcinst.ini && \
+    echo "FileUsage=1" >> /etc/odbcinst.ini && \
+    echo "UsageCount=1" >> /etc/odbcinst.ini && \
+    chmod 644 /etc/odbcinst.ini && \
+    ln -s /usr/lib/x86_64-linux-gnu/libodbccr.so.2 /etc/libodbccr.so \
+;fi
+
+###########################################################################
 # IMAP:
 ###########################################################################
 
@@ -533,6 +559,40 @@ RUN if [ ${INSTALL_CASSANDRA} = true ]; then \
     make install && \
     echo "extension=cassandra.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini && \
     ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-cassandra.ini \
+;fi
+
+###########################################################################
+# OCI8:
+###########################################################################
+
+ARG INSTALL_OCI8=false
+
+ENV LD_LIBRARY_PATH /usr/lib/oracle/11.2/client64/lib/
+
+RUN if [ ${INSTALL_OCI8} = true ]; then \
+    apt-get -y install alien wget libaio1 && \
+    wget http://cwimmoweb01.cernerasp.com/cwxti/oracleinstclient/oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
+    wget http://cwimmoweb01.cernerasp.com/cwxti/oracleinstclient/oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
+    alien -i oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
+    alien -i oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
+    pecl -q install oci8 && \
+    echo "extension=oci8.so" >> /etc/php/${PHP_VERSION}/mods-available/oci8.ini && \
+    ln -s /etc/php/${PHP_VERSION}/mods-available/oci8.ini /etc/php/${PHP_VERSION}/cli/conf.d/20-oci8.ini && \
+    mkdir -p /usr/lib/oracle/11.2/client64/lib/log \
+;fi
+
+###########################################################################
+# SSH2:
+###########################################################################
+
+ARG INSTALL_SSH2=false
+
+RUN if [ ${INSTALL_SSH2} = true ]; then \
+    apt-get -y install libssh2-1-dev iputils-ping && \
+    pecl install ssh2-alpha && \
+    echo "extension=ssh2.so" >> /etc/php/${PHP_VERSION}/mods-available/ssh2.ini && \
+    ln -s /etc/php/${PHP_VERSION}/mods-available/ssh2.ini /etc/php/${PHP_VERSION}/cli/conf.d/20-ssh2.ini && \
+    mkdir -p /root/.ssh \
 ;fi
 
 ###########################################################################

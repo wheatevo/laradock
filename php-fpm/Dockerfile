@@ -625,6 +625,76 @@ RUN if [ ${INSTALL_LDAP} = true ]; then \
 ;fi
 
 ###########################################################################
+# Extra LDAP Steps:
+###########################################################################
+
+RUN if [ ${INSTALL_LDAP} = true ]; then \
+    echo "TLS_REQCERT never" >> /etc/ldap/ldap.conf \
+;fi
+
+###########################################################################
+# Refrep Dependencies:
+###########################################################################
+
+ARG INSTALL_REFREP_DEPS=false
+
+RUN if [ ${INSTALL_REFREP_DEPS} = true ]; then \
+    docker-php-source extract; \
+  	{ \
+  		echo '# https://github.com/docker-library/php/issues/103#issuecomment-271413933'; \
+  		echo 'AC_DEFUN([PHP_ALWAYS_SHARED],[])dnl'; \
+  		echo; \
+  		cat /usr/src/php/ext/odbc/config.m4; \
+  	} > temp.m4; \
+  	mv temp.m4 /usr/src/php/ext/odbc/config.m4; \
+    apt-get update -yqq && \
+    apt-get -y install cifs-utils mdbtools libodbc1 odbc-mdbtools unixodbc-dev && \
+    docker-php-ext-configure odbc --with-unixODBC=shared,/usr; \
+    docker-php-ext-install odbc && \
+    echo "[MDBTools]" > /etc/odbcinst.ini && \
+    echo "Description=MDBTools Driver" >> /etc/odbcinst.ini && \
+    echo "Driver=/usr/lib/x86_64-linux-gnu/odbc/libmdbodbc.so" >> /etc/odbcinst.ini && \
+    echo "Setup=/usr/lib/x86_64-linux-gnu/odbc/libmdbodbc.so" >> /etc/odbcinst.ini && \
+    echo "FileUsage=1" >> /etc/odbcinst.ini && \
+    echo "UsageCount=1" >> /etc/odbcinst.ini && \
+    chmod 644 /etc/odbcinst.ini && \
+    ln -s /usr/lib/x86_64-linux-gnu/libodbccr.so.2 /etc/libodbccr.so \
+;fi
+
+###########################################################################
+# OCI8:
+###########################################################################
+
+ARG INSTALL_OCI8=false
+
+ENV LD_LIBRARY_PATH /usr/lib/oracle/11.2/client64/lib/
+
+RUN if [ ${INSTALL_OCI8} = true ]; then \
+    apt-get update -yqq && \
+    apt-get -y install alien wget libaio1 && \
+    wget http://cwimmoweb01.cernerasp.com/cwxti/oracleinstclient/oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
+    wget http://cwimmoweb01.cernerasp.com/cwxti/oracleinstclient/oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
+    alien -i oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
+    alien -i oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
+    docker-php-ext-install oci8 && \
+    mkdir -p /usr/lib/oracle/11.2/client64/lib/log \
+;fi
+
+###########################################################################
+# SSH2:
+###########################################################################
+
+ARG INSTALL_SSH2=false
+
+RUN if [ ${INSTALL_SSH2} = true ]; then \
+    apt-get update -yqq && \
+    apt-get -y install libssh2-1-dev iputils-ping && \
+    pecl install ssh2-alpha && \
+    docker-php-ext-enable ssh2 && \
+    mkdir -p /root/.ssh \
+;fi
+
+###########################################################################
 # SQL SERVER:
 ###########################################################################
 
