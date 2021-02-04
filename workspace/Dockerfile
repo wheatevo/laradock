@@ -592,26 +592,6 @@ RUN if [ ${INSTALL_CASSANDRA} = true ]; then \
 ;fi
 
 ###########################################################################
-# OCI8:
-###########################################################################
-
-ARG INSTALL_OCI8=false
-
-ENV LD_LIBRARY_PATH /usr/lib/oracle/11.2/client64/lib/
-
-RUN if [ ${INSTALL_OCI8} = true ]; then \
-    apt-get -y install alien wget libaio1 && \
-    wget http://cwimmoweb01.cernerasp.com/cwxti/oracleinstclient/oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
-    wget http://cwimmoweb01.cernerasp.com/cwxti/oracleinstclient/oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
-    alien -i oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
-    alien -i oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
-    pecl -q install oci8 && \
-    echo "extension=oci8.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/oci8.ini && \
-    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/oci8.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-oci8.ini && \
-    mkdir -p /usr/lib/oracle/11.2/client64/lib/log \
-;fi
-
-###########################################################################
 # SSH2:
 ###########################################################################
 

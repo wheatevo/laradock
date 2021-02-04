@@ -680,26 +680,6 @@ RUN if [ ${INSTALL_VERTICA} = true ]; then \
     chown -R root:root /opt/vertica \
 ;fi
 
-
-###########################################################################
-# OCI8:
-###########################################################################
-
-ARG INSTALL_OCI8=false
-
-ENV LD_LIBRARY_PATH /usr/lib/oracle/11.2/client64/lib/
-
-RUN if [ ${INSTALL_OCI8} = true ]; then \
-    apt-get update -yqq && \
-    apt-get -y install alien wget libaio1 && \
-    wget http://cwimmoweb01.cernerasp.com/cwxti/oracleinstclient/oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
-    wget http://cwimmoweb01.cernerasp.com/cwxti/oracleinstclient/oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
-    alien -i oracle-instantclient11.2-basic-11.2.0.3.0-1.x86_64.rpm && \
-    alien -i oracle-instantclient11.2-devel-11.2.0.3.0-1.x86_64.rpm && \
-    docker-php-ext-install oci8 && \
-    mkdir -p /usr/lib/oracle/11.2/client64/lib/log \
-;fi
-
 ###########################################################################
 # SQL SERVER:
 ###########################################################################
