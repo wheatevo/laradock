@@ -251,6 +251,10 @@ RUN if [ ${INSTALL_BZ2} = true ]; then \
   apt-get -y install php${LARADOCK_PHP_VERSION}-bz2 \
 ;fi
 
+###########################################################################
+# SSH2:
+###########################################################################
+
 USER root
 
 ARG INSTALL_SSH2=false
@@ -273,19 +277,6 @@ ARG PHP_VERSION=${LARADOCK_PHP_VERSION}
 RUN if [ ${INSTALL_GMP} = true ]; then \
   # Install the PHP GMP extension
   apt-get -y install php${LARADOCK_PHP_VERSION}-gmp \
-;fi
-
-###########################################################################
-# SSH2:
-###########################################################################
-
-USER root
-
-ARG INSTALL_SSH2=false
-
-RUN if [ ${INSTALL_SSH2} = true ]; then \
-  # Install the PHP SSH2 extension
-  apt-get -y install libssh2-1-dev php${LARADOCK_PHP_VERSION}-ssh2 \
 ;fi
 
 ###########################################################################
@@ -589,20 +580,6 @@ RUN if [ ${INSTALL_CASSANDRA} = true ]; then \
     make install && \
     echo "extension=cassandra.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini && \
     ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-cassandra.ini \
-;fi
-
-###########################################################################
-# SSH2:
-###########################################################################
-
-ARG INSTALL_SSH2=false
-
-RUN if [ ${INSTALL_SSH2} = true ]; then \
-    apt-get -y install libssh2-1-dev iputils-ping host && \
-    pecl install ssh2-alpha && \
-    echo "extension=ssh2.so" >> /etc/php/${PHP_VERSION}/mods-available/ssh2.ini && \
-    ln -s /etc/php/${PHP_VERSION}/mods-available/ssh2.ini /etc/php/${PHP_VERSION}/cli/conf.d/20-ssh2.ini && \
-    mkdir -p /root/.ssh \
 ;fi
 
 ###########################################################################
