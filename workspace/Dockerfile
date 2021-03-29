@@ -266,6 +266,18 @@ RUN if [ ${INSTALL_SSH2} = true ]; then \
 ;fi
 
 ###########################################################################
+# Chef Workstation:
+###########################################################################
+
+ARG INSTALL_CHEF_WORKSTATION=false
+
+RUN if [ ${INSTALL_CHEF_WORKSTATION} = true ]; then \
+    # Install Chef Workstation with standard config
+    curl -L https://omnitruck.chef.io/install.sh | bash -s -- -P chef-workstation && \
+    chef env --chef-license accept \
+;fi
+
+###########################################################################
 # GMP (GNU Multiple Precision):
 ###########################################################################
 
@@ -387,13 +399,13 @@ RUN if [ ${INSTALL_IMAP} = true ]; then \
 # Subversion:
 ###########################################################################
 
-USER root
+# USER root
 
-ARG INSTALL_SUBVERSION=false
+# ARG INSTALL_SUBVERSION=false
 
-RUN if [ ${INSTALL_SUBVERSION} = true ]; then \
-    apt-get install -y subversion \
-;fi
+# RUN if [ ${INSTALL_SUBVERSION} = true ]; then \
+#     apt-get install -y subversion \
+# ;fi
 
 
 ###########################################################################
@@ -485,18 +497,18 @@ RUN if [ ${INSTALL_PHPDBG} = true ]; then \
 # Blackfire:
 ###########################################################################
 
-ARG INSTALL_BLACKFIRE=false
-ARG BLACKFIRE_CLIENT_ID
-ENV BLACKFIRE_CLIENT_ID ${BLACKFIRE_CLIENT_ID}
-ARG BLACKFIRE_CLIENT_TOKEN
-ENV BLACKFIRE_CLIENT_TOKEN ${BLACKFIRE_CLIENT_TOKEN}
+# ARG INSTALL_BLACKFIRE=false
+# ARG BLACKFIRE_CLIENT_ID
+# ENV BLACKFIRE_CLIENT_ID ${BLACKFIRE_CLIENT_ID}
+# ARG BLACKFIRE_CLIENT_TOKEN
+# ENV BLACKFIRE_CLIENT_TOKEN ${BLACKFIRE_CLIENT_TOKEN}
 
-RUN if [ ${INSTALL_XDEBUG} = false -a ${INSTALL_BLACKFIRE} = true ]; then \
-    curl -L https://packages.blackfire.io/gpg.key | apt-key add - && \
-    echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list && \
-    apt-get update -yqq && \
-    apt-get install blackfire-agent \
-;fi
+# RUN if [ ${INSTALL_XDEBUG} = false -a ${INSTALL_BLACKFIRE} = true ]; then \
+#     curl -L https://packages.blackfire.io/gpg.key | apt-key add - && \
+#     echo "deb http://packages.blackfire.io/debian any main" | tee /etc/apt/sources.list.d/blackfire.list && \
+#     apt-get update -yqq && \
+#     apt-get install blackfire-agent \
+# ;fi
 
 ###########################################################################
 # ssh:
@@ -523,20 +535,20 @@ RUN if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
 # MongoDB:
 ###########################################################################
 
-ARG INSTALL_MONGO=false
+# ARG INSTALL_MONGO=false
 
-RUN if [ ${INSTALL_MONGO} = true ]; then \
-    # Install the mongodb extension
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      pecl install mongo && \
-      echo "extension=mongo.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongo.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongo.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-mongo.ini \
-    ;else \
-      pecl install mongodb && \
-      echo "extension=mongodb.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongodb.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongodb.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-mongodb.ini \
-    ;fi \
-;fi
+# RUN if [ ${INSTALL_MONGO} = true ]; then \
+#     # Install the mongodb extension
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#       pecl install mongo && \
+#       echo "extension=mongo.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongo.ini && \
+#       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongo.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-mongo.ini \
+#     ;else \
+#       pecl install mongodb && \
+#       echo "extension=mongodb.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongodb.ini && \
+#       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongodb.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-mongodb.ini \
+#     ;fi \
+# ;fi
 
 ###########################################################################
 # AMQP:
@@ -555,32 +567,32 @@ RUN if [ ${INSTALL_AMQP} = true ]; then \
 # CASSANDRA:
 ###########################################################################
 
-ARG INSTALL_CASSANDRA=false
+# ARG INSTALL_CASSANDRA=false
 
-RUN if [ ${INSTALL_CASSANDRA} = true ]; then \
-    apt-get install libgmp-dev -y && \
-    curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.28.0/libuv1-dev_1.28.0-1_amd64.deb -o libuv1-dev.deb && \
-    curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.28.0/libuv1_1.28.0-1_amd64.deb -o libuv1.deb && \
-    curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.12.0/cassandra-cpp-driver-dev_2.12.0-1_amd64.deb -o cassandra-cpp-driver-dev.deb && \
-    curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.12.0/cassandra-cpp-driver_2.12.0-1_amd64.deb -o cassandra-cpp-driver.deb && \
-    dpkg -i libuv1.deb && \
-    dpkg -i libuv1-dev.deb && \
-    dpkg -i cassandra-cpp-driver.deb && \
-    dpkg -i cassandra-cpp-driver-dev.deb && \
-    rm libuv1.deb libuv1-dev.deb cassandra-cpp-driver-dev.deb cassandra-cpp-driver.deb && \
-    cd /usr/src && \
-    git clone https://github.com/datastax/php-driver.git && \
-    cd /usr/src/php-driver/ext && \
-    phpize && \
-    mkdir /usr/src/php-driver/build && \
-    cd /usr/src/php-driver/build && \
-    ../ext/configure > /dev/null && \
-    make clean >/dev/null && \
-    make >/dev/null 2>&1 && \
-    make install && \
-    echo "extension=cassandra.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini && \
-    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-cassandra.ini \
-;fi
+# RUN if [ ${INSTALL_CASSANDRA} = true ]; then \
+#     apt-get install libgmp-dev -y && \
+#     curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.28.0/libuv1-dev_1.28.0-1_amd64.deb -o libuv1-dev.deb && \
+#     curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/dependencies/libuv/v1.28.0/libuv1_1.28.0-1_amd64.deb -o libuv1.deb && \
+#     curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.12.0/cassandra-cpp-driver-dev_2.12.0-1_amd64.deb -o cassandra-cpp-driver-dev.deb && \
+#     curl https://downloads.datastax.com/cpp-driver/ubuntu/18.04/cassandra/v2.12.0/cassandra-cpp-driver_2.12.0-1_amd64.deb -o cassandra-cpp-driver.deb && \
+#     dpkg -i libuv1.deb && \
+#     dpkg -i libuv1-dev.deb && \
+#     dpkg -i cassandra-cpp-driver.deb && \
+#     dpkg -i cassandra-cpp-driver-dev.deb && \
+#     rm libuv1.deb libuv1-dev.deb cassandra-cpp-driver-dev.deb cassandra-cpp-driver.deb && \
+#     cd /usr/src && \
+#     git clone https://github.com/datastax/php-driver.git && \
+#     cd /usr/src/php-driver/ext && \
+#     phpize && \
+#     mkdir /usr/src/php-driver/build && \
+#     cd /usr/src/php-driver/build && \
+#     ../ext/configure > /dev/null && \
+#     make clean >/dev/null && \
+#     make >/dev/null 2>&1 && \
+#     make install && \
+#     echo "extension=cassandra.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini && \
+#     ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/cassandra.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-cassandra.ini \
+# ;fi
 
 ###########################################################################
 # Gearman:
@@ -609,23 +621,23 @@ RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
 # Swoole EXTENSION
 ###########################################################################
 
-ARG INSTALL_SWOOLE=false
+# ARG INSTALL_SWOOLE=false
 
-RUN if [ ${INSTALL_SWOOLE} = true ]; then \
-    # Install Php Swoole Extension
-    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      pecl -q install swoole-2.0.10; \
-    else \
-      if [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
-        pecl install swoole-2.2.0; \
-      else \
-        pecl install swoole; \
-      fi \
-    fi && \
-    echo "extension=swoole.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini && \
-    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-swoole.ini \
-    && php -m | grep -q 'swoole' \
-;fi
+# RUN if [ ${INSTALL_SWOOLE} = true ]; then \
+#     # Install Php Swoole Extension
+#     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+#       pecl -q install swoole-2.0.10; \
+#     else \
+#       if [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
+#         pecl install swoole-2.2.0; \
+#       else \
+#         pecl install swoole; \
+#       fi \
+#     fi && \
+#     echo "extension=swoole.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini && \
+#     ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-swoole.ini \
+#     && php -m | grep -q 'swoole' \
+# ;fi
 
 ###########################################################################
 # Taint EXTENSION

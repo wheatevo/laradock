@@ -116,6 +116,18 @@ RUN if [ ${INSTALL_SSH2} = true ]; then \
 ;fi
 
 ###########################################################################
+# Chef Workstation:
+###########################################################################
+
+ARG INSTALL_CHEF_WORKSTATION=false
+
+RUN if [ ${INSTALL_CHEF_WORKSTATION} = true ]; then \
+    # Install Chef Workstation with standard config
+    curl -L https://omnitruck.chef.io/install.sh | bash -s -- -P chef-workstation && \
+    chef env --chef-license accept \
+;fi
+
+###########################################################################
 # libfaketime:
 ###########################################################################
 
